@@ -10,5 +10,6 @@ anyhow = "1.0.66"
 clap = { version = "4.0.29", features = ["derive"] }
 derive_more = "0.99.17"
 dotenv = "0.15.0"
+peg = "0.8.1"
 thiserror = "1.0.37"
 ureq = "2.5.0"
