@@ -70,6 +70,7 @@ pub fn retrieve_input(day: Day, caching: InputCaching) -> Result<String> {
     let url = format!("https://adventofcode.com/2022/day/{}/input", day);
     let data = ureq::get(&url)
         .set("Cookie", &format!("session={}", session_cookie_value))
+        .set("User-Agent", "https://github.com/TyPR124/aoc2022")
         .call()
         .context("http request error")?
         .into_string()
