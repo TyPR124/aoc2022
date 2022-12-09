@@ -95,6 +95,8 @@ where
     let (answer1, answer2) = S::solve(&input)?;
     let time_taken = start.elapsed();
     let seconds_taken = time_taken.as_secs_f64();
+    let ms_taken = time_taken.as_millis();
+    let us_taken = time_taken.as_micros();
     let debug_or_release = if cfg!(debug_assertions) {
         "DEBUG"
     } else {
@@ -107,7 +109,13 @@ where
     println!("Part 2 Answer: {answer2}");
     println!("------------------------");
     println!("Compiled in {debug_or_release} mode");
-    println!("Time taken: {seconds_taken:03.03} seconds");
+    if ms_taken > 1000 {
+        println!("Time taken: {seconds_taken:.03} s");
+    } else if ms_taken > 0 {
+        println!("Time taken: {ms_taken} ms");
+    } else {
+        println!("Time taken: {us_taken} μs");
+    }
     Ok(())
 }
 
