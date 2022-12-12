@@ -16,7 +16,7 @@ impl Solution for Day10 {
         _ => unreachable!(),
     };
     type Output1 = isize;
-    type Output2 = usize;
+    type Output2 = String;
     fn solve(input: &str) -> anyhow::Result<(Self::Output1, Self::Output2)> {
         let mut cycles = 0;
         let mut x = 1;
@@ -48,12 +48,12 @@ impl Solution for Day10 {
                 }
             }
         }
-        for row in &pixels {
-            for &p in row {
-                print!("{}", p)
-            }
-            println!();
+        let mut part2 = String::new();
+        for row in pixels {
+            part2.push('\n');
+            part2.extend(row.iter());
         }
-        Ok((part1, 0))
+        part2.push_str("\n.");
+        Ok((part1, part2))
     }
 }
