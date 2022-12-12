@@ -33,16 +33,17 @@ add-test day name:
     #!/usr/bin/env python3
 
     from subprocess import run
+    from sys import stdin
 
     day = {{day}}
     name = '{{name}}'
-    input_path = f'test_input/day{day:02}_{name}.input'
-    answers_path = f'test_input/day{day:02}_{name}.answers'
+    test_path = f'tests/day{day:02}_{name}.yaml'
 
-    with open(input_path, 'x') as f:
-        pass
+    with open(test_path, 'x') as f:
+        print('Please paste the input data below:')
+        print('Use ctrl+D on a new line to end')
+        print('----------------------------------')
+        input = ''.join(['  ' + line for line in stdin.readlines()])
+        f.write(f'---\ninput: |-\n{input}\nanswers:\n  - 0\n  - 0\n')
     
-    with open(answers_path, 'x') as f:
-        f.write('0\n0')
-    
-    run(['code', input_path, answers_path, '--reuse-window'])
+    run(['code', test_path, '--reuse-window'])

@@ -120,52 +120,60 @@ where
     Ok(())
 }
 
+#[derive(serde::Deserialize)]
+struct Test {
+    input: String,
+    answers: serde_yaml::Sequence,
+}
+
 pub fn test_solution<S>()
 where
     S: Solution,
 {
     let day = S::DAY;
     let day_prefix = format!("day{day:02}");
-    let dir = fs::read_dir("test_input").expect("test_input folder missing");
+    let dir = fs::read_dir("tests").expect("tests folder missing");
     for item in dir {
         let item = item.unwrap();
         let meta = item.metadata().unwrap();
         if !meta.is_file() {
             continue;
         }
-        let input_path = item.path();
-        let input_filename = input_path.file_name().unwrap().to_string_lossy();
-        if !(input_filename.ends_with(".input") && input_filename.starts_with(&*day_prefix)) {
+        let test_path = item.path();
+        let test_filename = test_path.file_name().unwrap().to_string_lossy();
+        if !(test_filename.ends_with(".yaml") && test_filename.starts_with(&*day_prefix)) {
             continue;
         }
-        let input = fs::read_to_string(&input_path).expect("failed to read test input file");
-        let answers_path = input_path.with_extension("answers");
-        if !answers_path.exists() {
-            panic!(
-                "Answers file {} not found",
-                answers_path.file_name().unwrap().to_string_lossy()
-            )
-        }
-        let answers = fs::read_to_string(&answers_path).expect("failed to read answers file");
-        let mut answers_lines = answers.lines();
-        let answer1 = answers_lines.next().expect("missing answer 1");
-        let answer2 = answers_lines.next().expect("missing answer 2");
+        let test_data = fs::read_to_string(&*test_path).unwrap();
+        let Test { input, answers } = serde_yaml::from_str(&test_data).unwrap();
+        let answers: Vec<String> = answers
+            .into_iter()
+            .map(|answer| match answer {
+                serde_yaml::Value::Null => todo!(),
+                serde_yaml::Value::Bool(_) => todo!(),
+                serde_yaml::Value::Number(n) => format!("{n}"),
+                serde_yaml::Value::String(s) => s,
+                serde_yaml::Value::Sequence(_) => todo!(),
+                serde_yaml::Value::Mapping(_) => todo!(),
+                serde_yaml::Value::Tagged(_) => todo!(),
+            })
+            .collect();
 
         let (solved1, solved2) = S::solve(&input).expect("solution failed");
 
         assert_eq!(
-            answer1,
+            answers[0],
             format!("{solved1}"),
             "test {} failed part 1",
-            input_path.file_name().unwrap().to_string_lossy()
+            test_filename
         );
         assert_eq!(
-            answer2,
+            answers[1],
             format!("{solved2}"),
             "test {} failed part 2",
-            input_path.file_name().unwrap().to_string_lossy()
+            test_filename
         );
 
-        println!("Test passed: {}", input_filename);
+        println!("Test passed: {}", test_filename);
     }
 }
